@@ -1,0 +1,14 @@
+name: 12H Live Stream
+on:
+  workflow_dispatch:
+jobs:
+  run-stream:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup environment
+        run: sudo apt update && sudo apt install ffmpeg jq -y
+      - name: Run Script
+        env:
+          STREAM_KEY: ${{ secrets.STREAM_KEY }}
+        run: python3 main.py
