@@ -1,9 +1,8 @@
 name: 12H Live Stream
 on:
   push:
-    paths:
-      - 'index.json'
-      - 'main.py'
+    branches:
+      - main  # උඹේ branch එකේ නම වෙනස් නම් ඒක දාපන් (උදා: master)
   workflow_dispatch:
 
 jobs:
