@@ -1,6 +1,11 @@
 name: 12H Live Stream
 on:
+  push:
+    paths:
+      - 'index.json'
+      - 'main.py'
   workflow_dispatch:
+
 jobs:
   run-stream:
     runs-on: ubuntu-latest
