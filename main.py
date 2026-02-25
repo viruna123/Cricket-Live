@@ -20,30 +20,27 @@ if __name__ == "__main__":
             v1, v2, audio = data['video1'], data['video2'], data['audio']
             ticker, title = data['ticker_text'], data['overlay_title']
 
-            print("Starting Stream with Safe 1000k Bitrate... 🛡️")
+            print("Starting Stream with Original Audio Balance... 🏏🦁")
             
-            # -b:v 1000k: බෆර් නොවී දුවන්න පුළුවන් උපරිම ආරක්ෂිත සීමාව
-            # -preset superfast: CPU එකට බර අඩු කරලා ස්මූත් කරනවා
+            # [0:a][1:a]...volume=3.0 -> මැච් එකේ සද්දේ ආයේ පට්ටටම වැඩි කළා
+            # [2:a]volume=0.02 -> පාපරේ සින්දුව ආයේ හීනියටම හැදුවා
             
             cmd = (
                 f'ffmpeg -re -stream_loop -1 -i "{v1}" -stream_loop -1 -i "{v2}" -stream_loop -1 -i "{audio}" '
-                f'-filter_complex "[0:v]scale=1280:720,setsar=1[v1_scaled]; '
-                f'[1:v]scale=1280:720,setsar=1[v2_scaled]; '
-                f'[v1_scaled][v2_scaled]concat=n=2:v=1[v_base]; '
-                f'[0:a][1:a]concat=n=2:v=0:a=1,volume=3.0[v_audio]; '
-                f'[2:a]volume=0.12[bg_audio]; '
-                f'[v_audio][bg_audio]amix=inputs=2:duration=longest:dropout_transition=0[a_final]; '
-                f'[v_base]drawtext=text=\'{title}\':x=20:y=20:fontsize=30:fontcolor=yellow:box=1:boxcolor=black@0.6, '
-                f'drawtext=text=\'{ticker}\':x=w-mod(t*100\\,w+tw):y=h-50:fontsize=25:fontcolor=white:box=1:boxcolor=black@0.7[v_final]" '
-                f'-map "[v_final]" -map "[a_final]" -c:v libx264 -preset superfast -tune zerolatency -threads 2 '
-                f'-b:v 1000k -maxrate 1000k -bufsize 2000k -g 60 '
-                f'-c:a aac -b:a 96k -ar 44100 -f flv {YOUTUBE_URL}/{STREAM_KEY}'
+                f'-filter_complex "[0:v]scale=1280:720[v1s]; [1:v]scale=1280:720[v2s]; [v1s][v2s]concat=n=2:v=1[v]; '
+                f'[v]drawtext=text=\'{title}\':x=20:y=20:fontsize=30:fontcolor=yellow:box=1:boxcolor=black@0.6, '
+                f'drawtext=text=\'{ticker}\':x=w-mod(t*100\\,w+tw):y=h-50:fontsize=25:fontcolor=white:box=1:boxcolor=black@0.7[vf]; '
+                f'[0:a][1:a]concat=n=2:v=0:a=1,volume=3.0[a_match]; '
+                f'[2:a]volume=0.02[a_bg]; '
+                f'[a_match][a_bg]amix=inputs=2:duration=longest[af]" '
+                f'-map "[vf]" -map "[af]" -c:v libx264 -preset ultrafast -tune zerolatency -threads 0 '
+                f'-b:v 1200k -maxrate 1200k -bufsize 2400k -g 60 '
+                f'-c:a aac -b:a 128k -f flv {YOUTUBE_URL}/{STREAM_KEY}'
             )
             os.system(cmd)
         except Exception as e:
             print(f"Error: {e}")
         
-        print("Restarting in 5s...")
         time.sleep(5)
 
-# Restart count: 5
+# Restart count: 9
