@@ -31,7 +31,7 @@ if __name__ == "__main__":
                 f'[1:v]scale=1280:720,setsar=1[v2_scaled]; '
                 f'[v1_scaled][v2_scaled]concat=n=2:v=1[v_base]; '
                 f'[0:a][1:a]concat=n=2:v=0:a=1,volume=3.0[v_audio]; '
-                f'[2:a]volume=0.02[bg_audio]; '
+                f'[2:a]volume=0.32[bg_audio]; '
                 f'[v_audio][bg_audio]amix=inputs=2:duration=longest:dropout_transition=0[a_final]; '
                 f'[v_base]drawtext=text=\'{title}\':x=20:y=20:fontsize=30:fontcolor=yellow:box=1:boxcolor=black@0.6, '
                 f'drawtext=text=\'{ticker}\':x=w-mod(t*100\\,w+tw):y=h-50:fontsize=25:fontcolor=white:box=1:boxcolor=black@0.7[v_final]" '
